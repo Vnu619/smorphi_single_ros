@@ -1,0 +1,25 @@
+<launch>
+    <arg name="use_rviz" default="true"/>
+    <arg name="port" default="/dev/ttyUSB0"/>
+    <arg name="imu_frame" default="imu_link"/>
+    <arg name="imu_topic" default="/imu_data"/>
+    <node pkg="fdilink_ahrs" name="ahrs_driver" type="ahrs_driver" output="screen">
+        <!-- Whether to output debug information -->
+        <param name="debug" value="false"/>
+        <!-- Serial device, can be fixed through rules.d configuration -->
+        <param name="port" value="$(arg port)"/>
+        <!-- Baud Rate -->
+        <param name="baud" value="921600"/>
+        <!-- frame_id in the published imu topic -->
+        <param name="imu_frame" value="$(arg imu_frame)"/>
+        <!-- The published data has different coordinate systems based on different devices 0: origin_data, 1: for single imu or ucar in ROS, 2: for Xiao in ROS -->
+        <param name="device_type" value="1"/>
+        <!-- Posted imu topic name -->
+        <remap from="/imu_data" to="$(arg imu_topic)"/>
+        <!-- yaw angle of magnetic north -->
+        <remap from="/mag_pose_2d" to="/mag_pose_2d"/>
+    </node>
+    <!-- rviz -->
+    <!--<node pkg="rviz" type="rviz" name="rviz" required="true"
+          args="-d $(find fdilink_ahrs)/rviz/fdilink_driver.rviz" if="$(arg use_rviz)"/>-->
+</launch>
