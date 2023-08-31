@@ -25,7 +25,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <launch>
   <!-- Run the map server -->
-  <arg name="map_file" default="$(find waspm_launchers)/maps/roar_test.yaml"/>
+  <arg name="map_file" default="$(find smorphi_launchers)/maps/smorphi_yishun.yaml"/>
   <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
   <arg name="scan_topic" default='scan' />
 

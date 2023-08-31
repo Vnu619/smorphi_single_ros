@@ -14,8 +14,8 @@ DWAPlannerROS:
   holonomic_robot: false
   prune_plan: true
 
-  xy_goal_tolerance: 0.15
-  yaw_goal_tolerance: 0.15
+  xy_goal_tolerance: 0.25
+  yaw_goal_tolerance: 0.2
   trans_stopped_vel: 0.1
   theta_stopped_vel: 0.1
   sim_time: 4.0
