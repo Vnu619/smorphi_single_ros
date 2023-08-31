@@ -1,0 +1,5 @@
+<launch>
+
+<node pkg="smorphi_controller" name="smorphi_controller" type="smorphi_controller.py"/>
+
+</launch>
