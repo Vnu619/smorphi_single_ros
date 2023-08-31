@@ -1,0 +1,80 @@
+<!--
+Example launch file: launches the scan matcher with pre-recorded data
+-->
+
+<launch>
+#### turn on the lidar to get the /scan topic    #############################
+  <!--include file="$(find rplidar_ros)/launch/view_rplidar_a3.launch"/-->
+#### turn on the imu to get the /imu_link topic    #############################
+  <include file="$(find sick_tim)/launch/sick_1.launch"/>
+  <include file="$(find wasp_m_controller)/launch/wasp_m_controller.launch"/>
+  <include file="$(find vectornav)/launch/vectornav.launch"/>
+  <!--node pkg="vectornav" type="imu_repub.py" name="imu_repub" output="screen" /--> 
+
+<!--include file="$(find sick_tim)/launch/sick_tim571_2050101.launch"/-->
+<!--<include file="$(find command_rqt)/launch/wasp_controller_individual.launch"/>-->
+#### turn on uwb /hedge_pose topic    #############################
+
+  <!--include file="$(find hedge_msg_adapter)/launch/hedge_msg_adapter.launch"/-->	
+
+  <!--include file="$(find microstrain_mips)/launch/microstrain.launch"/-->
+  <!--node name="map_server" pkg="map_server" type="map_server" args="$(find laser_scan_matcher)/map/mymap.yaml"/-->
+#### static transfrom the fix frame mounted on robot   #############################
+  <!--node pkg="tf" type="static_transform_publisher" name="base_link_to_laser_link"
+    args="0.37 -0.27 0.0 -0.6108.0 0.0 0.0 base_link laser_link 1000" /-->
+<node pkg="tf" type="static_transform_publisher" name="base_link_to_base_link2"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link base_link2 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_base_link1"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link base_link1 100" />
+  <!--node pkg="tf" type="static_transform_publisher" name="base_link_to_imu_repub"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link repub_imu_link 100" /-->
+<!--
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_base_footprint"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link base_footprint 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_uwb"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 odom beacon_map 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_odom_wheel"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 odom odom_wheel 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 map odom 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_my_frame"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 map my_frame 100" />
+-->
+
+#### hector slam to get the noise odom  #############################
+ <!--include file="$(find hector_slam_launch)/launch/tutorial.launch"/-->
+#### turn on base to get odom_wheel    #############################
+  <!--include file="$(find base_controller)/launch/base_controller.launch"/-->
+ #### sensore fusion the noise odom, imu and wheels odom  and publish the odom to baselink #############################
+  <include file="$(find robot_localization)/launch/mapping_ekf_template.launch"/>
+  #### map odom by amcl  #############################
+<!-- Run the map server -->
+ <!--<arg name="map_file" default="$(find robot_localization)/maps/blank_map.yaml"/>
+ <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />-->
+
+<!--include file="$(find waspm_launchers)/launch/gmapping.launch"/-->
+<!--
+ <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping">
+    <param name="base_frame" value="base_link"/>
+    <param name="odom_frame" value="odom"/>
+    <param name="scan_frame" value="laser_link1"/>
+  </node>
+  -->
+  #### publish an example base_link -> laser transform ###########
+
+  <!-- move_base -->
+
+<include file="$(find waspm_launchers)/launch/gmapping.launch"/>
+
+
+  <!--include file="$(find base_controller)/launch/base_controller.launch"/-->
+ <!-- <node pkg="rviz" type="rviz" name="rviz"/>-->
+
+  <!--include file="$(find usb_cam)/launch/usb_cam-test.launch"/-->
+ <!-- <include file="$(find odom_to_trajectory)/launch/create_trajectory.launch"/>-->
+
+</launch>

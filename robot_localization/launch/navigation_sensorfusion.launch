@@ -1,0 +1,95 @@
+<!--
+Example launch file: launches the scan matcher with pre-recorded data
+-->
+
+<launch>
+#### turn on the lidar to get the /scan topic    #############################
+  <!--include file="$(find rplidar_ros)/launch/view_rplidar_a3.launch"/-->
+#### turn on the imu to get the /imu_link topic    #############################
+  <!--include file="$(find vectornav)/launch/vectornav2.launch"/-->
+  <include file="$(find vectornav)/launch/vectornav.launch"/>
+<!--
+<include file="$(find ira_laser_tools)/launch/laserscan_multi_merger.launch"/>
+<include file="$(find laser_filters)/examples/polygon_filter_example.launch"/>
+<include file="$(find command_rqt)/launch/wasp_controller_individual.launch"/>
+-->
+
+#### turn on uwb /hedge_pose topic    #############################
+  <include file="$(find robot_localization)/launch/navigation_ekf_template.launch"/>
+  <!--include file="$(find hedge_msg_adapter)/launch/hedge_msg_adapter.launch"/-->	
+
+  <!--include file="$(find microstrain_mips)/launch/microstrain.launch"/-->
+  <!--node name="map_server" pkg="map_server" type="map_server" args="$(find laser_scan_matcher)/map/mymap.yaml"/-->
+#### static transfrom the fix frame mounted on robot   #############################
+  <!--<node pkg="tf" type="static_transform_publisher" name="base_link_to_laser"
+    args="0.20 -0.25 0.0 -0.6108 0.0 0.0 base_link laser_link 100" />-->
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_base_link2"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link base_link2 100" />
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_base_link1"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link base_link1 100" />
+
+<!--
+  <node pkg="tf" type="static_transform_publisher" name="base_link_to_base_footprint"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 base_link base_footprint 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_uwb"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 odom beacon_map 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="odom_to_odom_wheel"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 odom odom_wheel 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_odom"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 map odom 100" />
+
+  <node pkg="tf" type="static_transform_publisher" name="map_to_my_frame"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 map my_frame 100" />
+-->
+
+#### hector slam to get the noise odom  #############################
+ <!--include file="$(find hector_slam_launch)/launch/tutorial.launch"/-->
+#### turn on base to get odom_wheel    #############################
+  <!--include file="$(find base_controller)/launch/base_controller.launch"/-->
+ #### sensore fusion the noise odom, imu and wheels odom  and publish the odom to baselink #############################
+
+  #### map odom by amcl  #############################
+!-- Run the map server -->
+ <!--<arg name="map_file" default="$(find robot_localization)/maps/blank_map.yaml"/>
+ <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />-->
+
+  <include file="$(find robot_localization)/launch/amcl_demo.launch"/>
+  #### publish an example base_link -> laser transform ###########
+
+
+  <!--arg name="odom_topic" default="odom" /-->
+  <arg name="move_forward_only" default="true"/>
+
+  <!-- move_base -->
+
+
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+   <!-- <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />-->
+    <rosparam file="$(find robot_localization)/params/move_base_params.yaml" command="load" />
+    <rosparam file="$(find robot_localization)/params/costmap_common_params_burger.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find robot_localization)/params/costmap_common_params_burger.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find robot_localization)/params/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_localization)/params/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find robot_localization)/params/global_planner_params_burger.yaml" command="load" />
+    <rosparam file="$(find robot_localization)/params/dwa_local_planner_params_burger.yaml" command="load" />
+  <!--  <rosparam file="$(find robot_localization)/params/eband_local_planner.yaml" command="load" />-->
+<!--rosparam file="$(find robot_localization)/params/eband_2.yaml" command="load" /-->
+   <!--rosparam file="$(find robot_localization)/params/teb_local_planner.yaml" command="load" /-->
+<!--remap from="cmd_vel" to="mobile_base/commands/velocity"/-->
+    <!--remap from="odom" to="$(arg odom_topic)"/-->
+
+ <!-- <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />-->
+ </node>
+
+
+  <!--include file="$(find base_controller)/launch/base_controller.launch"/-->
+ <!-- <node pkg="rviz" type="rviz" name="rviz"/>-->
+
+  <!--include file="$(find usb_cam)/launch/usb_cam-test.launch"/-->
+ <!-- <include file="$(find odom_to_trajectory)/launch/create_trajectory.launch"/>-->
+
+</launch>

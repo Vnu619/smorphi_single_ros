@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!--
+Software License Agreement (BSD)
+
+\file      amcl_demo.launch
+\authors   Paul Bovbel <pbovbel@clearpathrobotics.com>, Prasenjit Mukherjee <pmukherj@clearpathrobotics.com>
+\copyright Copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+the following conditions are met:
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and the
+   following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the
+   following disclaimer in the documentation and/or other materials provided with the distribution.
+ * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or promote
+   products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WAR-
+RANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, IN-
+DIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<launch>
+  <!-- Run the map server -->
+  <arg name="map_file" default="$(find waspm_launchers)/maps/roar_test.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+  <arg name="scan_topic" default='scan' />
+
+
+  <!--- Run AMCL -->
+  <include file="$(find robot_localization)/launch/amcl.launch">
+    <arg name="scan_topic" value="$(arg scan_topic)" />
+
+  </include>
+
+
+
+<!--include file="$(find laser_scan_matcher)/demo/demo.launch" /-->
+  <!--node pkg="tf" type="static_transform_publisher" name="map_to_odom" args="0 0 0 0 0 0 map odom 100" /-->
+<!--node pkg="tf" type="static_transform_publisher" name="odom_to_base_footprint" args="0 0 0 0 0 0 odom base_footprint 100" /-->
+
+
+<!--node pkg="tf" type="static_transform_publisher" name="base_link_to_laser" args="0 0 0 0 0 0 base_link laser_link 100"/-->
+  <!--- Run Move Base -->
+  <!--include file="$(find husky_navigation)/launch/move_base.launch" /-->
+<!--
+ <arg name="custom_param_file" default="$(find husky_navigation)/config/dummy.yaml"/>
+ <include file="$(find husky_navigation)/launch/includes/move_base_turtle.launch.xml">
+<arg name="custom_param_file" value="$(arg custom_param_file)"/>
+</include>
+-->
+<!-- move_base -->
+
+<!--
+  <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+    <param name="base_global_planner" value="carrot_planner/CarrotPlanner" />
+    <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+    <rosparam file="$(find husky_navigation)/config/costmap_global_static.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find husky_navigation)/config/costmap_local.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find husky_navigation)/config/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find husky_navigation)/config/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find husky_navigation)/config/move_base_params.yaml" command="load" />
+    <rosparam file="$(find husky_navigation)/config/dwa_local_planner_params_burger.yaml" command="load" />
+
+    <remap from="cmd_vel" to="$(arg cmd_vel_topic)"/>
+    
+  <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />-->
+<!--  </node>
+-->
+<remap from="odom" to="odom_ekf"/>
+
+</launch>
