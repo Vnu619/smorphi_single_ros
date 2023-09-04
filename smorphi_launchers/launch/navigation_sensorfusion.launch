@@ -1,21 +1,15 @@
 <launch>
-#### turn on the lidar to get the /scan topic    #############################
+
   <include file="$(find rplidar_ros)/launch/rplidar_a1.launch"/>
-#### turn on the imu to get the /imu_link topic    #############################
+
   <include file="$(find smorphi_controller)/launch/smorphi_controller.launch"/>
   <include file="$(find fdilink_ahrs)/launch/fdilink_ahrs.launch"/>
-  
 
-#### turn on uwb /hedge_pose topic    #############################
   <include file="$(find robot_localization)/launch/navigation_ekf_template.launch"/>
 
 
-!-- Run the map server -->
- <!--<arg name="map_file" default="$(find robot_localization)/maps/blank_map.yaml"/>
- <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />-->
 
   <include file="$(find robot_localization)/launch/amcl_demo.launch"/>
-  #### publish an example base_link -> laser transform ###########
 
 
   <!-- move_base -->
@@ -40,8 +34,6 @@
  <!-- <param name="DWAPlannerROS/min_vel_x" value="0.0" if="$(arg move_forward_only)" />-->
  </node>
 
-
-  <!--include file="$(find base_controller)/launch/base_controller.launch"/-->
  <!-- <node pkg="rviz" type="rviz" name="rviz"/>-->
 
   <!--include file="$(find usb_cam)/launch/usb_cam-test.launch"/-->

@@ -2,18 +2,13 @@
 <launch>
 
   <include file="$(find rplidar_ros)/launch/rplidar_a1.launch"/>
-#### turn on the imu to get the /imu_link topic    #############################
-  <!--include file="$(find vectornav)/launch/vectornav2.launch"/-->
-  <include file="$(find fdilink_ahrs)/launch/fdilink_ahrs.launch"/>
-  <!--node pkg="vectornav" type="imu_repub.py" name="imu_repub" output="screen" /--> 
 
-<!--include file="$(find sick_tim)/launch/sick_tim571_2050101.launch"/-->
+  <include file="$(find fdilink_ahrs)/launch/fdilink_ahrs.launch"/>
+
 <include file="$(find smorphi_controller)/launch/smorphi_controller.launch"/>
 
   <include file="$(find robot_localization)/launch/ekf_template.launch"/>
-  #### map odom by amcl  #############################
 
-  #### publish an example base_link -> laser transform ###########
 
   <!-- move_base -->
 
